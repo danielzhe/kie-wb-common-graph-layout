@@ -17,16 +17,16 @@
 package kie.wb.common.graph.layout.step03;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import kie.wb.common.graph.layout.Edge;
 import kie.wb.common.graph.layout.Graph;
-import org.junit.Assert;
+import kie.wb.common.graph.layout.Layer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VertexOrderingTest {
@@ -37,19 +37,19 @@ public class VertexOrderingTest {
         graph.addEdge("A", "D");
         graph.addEdge("B", "C");
 
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer layer01 = new VertexOrdering.Layer(1);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer layer01 = new Layer(1);
         layer01.addNewVertex("A");
         layer01.addNewVertex("B");
         layers.add(layer01);
 
-        VertexOrdering.Layer layer02 = new VertexOrdering.Layer(2);
+        Layer layer02 = new Layer(2);
         layer02.addNewVertex("C");
         layer02.addNewVertex("D");
         layers.add(layer02);
 
         VertexOrdering ordering = new VertexOrdering(graph, layers);
-        ArrayList<VertexOrdering.Layer> orderedLayers = ordering.process();
+        ArrayList<Layer> orderedLayers = ordering.process();
 
         assertArrayEquals(new Object[]{"A", "B"}, orderedLayers.get(0).getVertices().stream().map(v -> v.getId()).toArray());
         assertArrayEquals(new Object[]{"D", "C"}, orderedLayers.get(1).getVertices().stream().map(v -> v.getId()).toArray());
@@ -66,18 +66,18 @@ public class VertexOrderingTest {
         graph.addEdge("C", "H");
         graph.addEdge("D", "F");
 
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer layer01 = new VertexOrdering.Layer(1);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer layer01 = new Layer(1);
         layer01.addNewVertex("A");
         layers.add(layer01);
 
-        VertexOrdering.Layer layer02 = new VertexOrdering.Layer(2);
+        Layer layer02 = new Layer(2);
         layer02.addNewVertex("B");
         layer02.addNewVertex("C");
         layer02.addNewVertex("D");
         layers.add(layer02);
 
-        VertexOrdering.Layer layer03 = new VertexOrdering.Layer(3);
+        Layer layer03 = new Layer(3);
         layer03.addNewVertex("E");
         layer03.addNewVertex("F");
         layer03.addNewVertex("G");
@@ -85,7 +85,7 @@ public class VertexOrderingTest {
         layers.add(layer03);
 
         VertexOrdering ordering = new VertexOrdering(graph, layers);
-        ArrayList<VertexOrdering.Layer> orderedLayers = ordering.process();
+        ArrayList<Layer> orderedLayers = ordering.process();
 
         assertArrayEquals(new Object[]{"A"}, orderedLayers.get(0).getVertices().stream().map(v -> v.getId()).toArray());
         assertArrayEquals(new Object[]{"D", "B", "C"}, orderedLayers.get(1).getVertices().stream().map(v -> v.getId()).toArray());
@@ -102,18 +102,18 @@ public class VertexOrderingTest {
         graph.addEdge("D", "G");
         graph.addEdge("A", "H");
 
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer layer1 = new VertexOrdering.Layer(1);
+        ArrayList<VertexOrdering.kie.wb.common.graph.layout.Layer> layers = new ArrayList<>();
+        VertexOrdering.kie.wb.common.graph.layout.Layer layer1 = new VertexOrdering.kie.wb.common.graph.layout.Layer(1);
         layer1.addNewVertex("A");
         layers.add(layer1);
 
-        VertexOrdering.Layer layer2 = new VertexOrdering.Layer(2);
+        VertexOrdering.kie.wb.common.graph.layout.Layer layer2 = new VertexOrdering.kie.wb.common.graph.layout.Layer(2);
         layer2.addNewVertex("B");
         layer2.addNewVertex("C");
         layer2.addNewVertex("D");
         layers.add(layer2);
 
-        VertexOrdering.Layer layer3 = new VertexOrdering.Layer(3);
+        VertexOrdering.kie.wb.common.graph.layout.Layer layer3 = new VertexOrdering.kie.wb.common.graph.layout.Layer(3);
         layer3.addNewVertex("E");
         layer3.addNewVertex("F");
         layer3.addNewVertex("G");
@@ -123,7 +123,7 @@ public class VertexOrderingTest {
         VertexOrdering ordering = new VertexOrdering(graph, layers);
 
         ArrayList<Edge> edges = new ArrayList<Edge>(Arrays.asList(graph.getEdges()));
-        ArrayList<VertexOrdering.Layer> virtual = ordering.createVirtual(edges);
+        ArrayList<VertexOrdering.kie.wb.common.graph.layout.Layer> virtual = ordering.createVirtual(edges);
 
         virtual.size();
     }
@@ -131,17 +131,17 @@ public class VertexOrderingTest {
     @Test
     public void calculateMedianTest(){
 
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
+        ArrayList<VertexOrdering.kie.wb.common.graph.layout.Layer> layers = new ArrayList<>();
         ArrayList<Edge> edges = new ArrayList<>();
         edges.add(new Edge("A", "F"));
         edges.add(new Edge("B", "E"));
         edges.add(new Edge("C", "D"));
 
-        VertexOrdering.Layer layer00 = new VertexOrdering.Layer(0);
+        VertexOrdering.kie.wb.common.graph.layout.Layer layer00 = new VertexOrdering.kie.wb.common.graph.layout.Layer(0);
         layer00.addNewVertex("A");
         layer00.addNewVertex("B");
         layer00.addNewVertex("C");
-        VertexOrdering.Layer layer01 = new VertexOrdering.Layer(1);
+        VertexOrdering.kie.wb.common.graph.layout.Layer layer01 = new VertexOrdering.kie.wb.common.graph.layout.Layer(1);
         layer01.addNewVertex("D");
         layer01.addNewVertex("E");
         layer01.addNewVertex("F");
@@ -164,14 +164,14 @@ public class VertexOrderingTest {
 
     @Test
     public void testFlat(){
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<VertexOrdering.kie.wb.common.graph.layout.Layer> layers = new ArrayList<>();
+        VertexOrdering.kie.wb.common.graph.layout.Layer top = new VertexOrdering.kie.wb.common.graph.layout.Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         top.addNewVertex("C");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        VertexOrdering.kie.wb.common.graph.layout.Layer bottom = new VertexOrdering.kie.wb.common.graph.layout.Layer(1);
         bottom.addNewVertex("D");
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");
@@ -191,13 +191,13 @@ public class VertexOrderingTest {
 
     @Test
     public void testSimpleCrossing() {
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("C");
         bottom.addNewVertex("D");
         layers.add(bottom);
@@ -213,13 +213,13 @@ public class VertexOrderingTest {
 
     @Test
     public void testSimpleNoCrossing() {
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("C");
         bottom.addNewVertex("D");
         layers.add(bottom);
@@ -244,14 +244,14 @@ public class VertexOrderingTest {
          *   /   \
          * D   E   F
          */
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         top.addNewVertex("C");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("D");
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");
@@ -278,14 +278,14 @@ public class VertexOrderingTest {
          *   / /     \          \
          *  D         E          F
          * */
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         //top.addNewVertex("C");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("D");
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");
@@ -313,14 +313,14 @@ public class VertexOrderingTest {
          *  / \|
          * D   E   F
          * */
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         top.addNewVertex("C");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("D");
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");
@@ -348,15 +348,15 @@ public class VertexOrderingTest {
          *  |       |      \  \---\ \|
          *  E       F       G        H
          */
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         top.addNewVertex("C");
         top.addNewVertex("D");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");
         bottom.addNewVertex("G");
@@ -387,14 +387,14 @@ public class VertexOrderingTest {
          *   / | \
          * D   E   F
          */
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         top.addNewVertex("C");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("D");
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");
@@ -416,14 +416,14 @@ public class VertexOrderingTest {
         /*
          * k33 - every vertex from layer 1 connected to every vertex in layer 2
          */
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         top.addNewVertex("C");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("D");
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");
@@ -458,14 +458,14 @@ public class VertexOrderingTest {
          * | /  |  \
          * D    E   F
          */
-        ArrayList<VertexOrdering.Layer> layers = new ArrayList<>();
-        VertexOrdering.Layer top = new VertexOrdering.Layer(0);
+        ArrayList<Layer> layers = new ArrayList<>();
+        Layer top = new Layer(0);
         top.addNewVertex("A");
         top.addNewVertex("B");
         //top.addNewVertex("C");
         layers.add(top);
 
-        VertexOrdering.Layer bottom = new VertexOrdering.Layer(1);
+        Layer bottom = new Layer(1);
         bottom.addNewVertex("D");
         bottom.addNewVertex("E");
         bottom.addNewVertex("F");

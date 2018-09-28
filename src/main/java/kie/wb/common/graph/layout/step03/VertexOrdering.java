@@ -24,12 +24,14 @@ import java.util.stream.Collectors;
 
 import kie.wb.common.graph.layout.Edge;
 import kie.wb.common.graph.layout.Graph;
+import kie.wb.common.graph.layout.Layer;
+import kie.wb.common.graph.layout.Vertex;
 
 //  Gansner et al 1993
 public class VertexOrdering {
 
     private final Graph graph;
-    private ArrayList<Layer> layers;
+    private ArrayList<Layer> inputLayers;
     private Object[][] nestedBestRanks;
 
     /**
@@ -39,7 +41,7 @@ public class VertexOrdering {
 
     public VertexOrdering(Graph graph, ArrayList<Layer> layers) {
         this.graph = graph;
-        this.layers = layers;
+        this.inputLayers = layers;
     }
 
     public ArrayList<Layer> process() {
@@ -60,7 +62,6 @@ public class VertexOrdering {
 
         for (int i = 0; i < MaxIterations; i++) {
             median(virtualized, edges, i);
-            // TODO: the transpose function. Can it work only with median?
             //transpose(layers, edges);
             if (this.crossing(best, edges) > this.crossing(virtualized, edges)) {
                 best = clone(virtualized);
@@ -133,25 +134,6 @@ public class VertexOrdering {
         return crossingCount;
     }
 
-    private static int positionOf(Edge edge, Layer layer) {
-        Optional<Vertex> vertex = layer.getVertices().stream()
-                .filter(v -> v.getId().equals(edge.getFrom()) || v.getId().equals(edge.getTo()))
-                .findFirst();
-
-        return layer.getVertices().indexOf(vertex.get());
-    }
-
-   /* private void transpose(ArrayList<Layer> layers, ArrayList<Edge> edges) {
-        boolean improved = true;
-        while(improved){
-            improved = false;
-            for (Layer l:
-            ) {
-
-            }
-        }
-    }*/
-
     public static void median(ArrayList<Layer> layers, ArrayList<Edge> edges, int i) {
 
         if ((i % 2 == 0)) {
@@ -162,10 +144,6 @@ public class VertexOrdering {
                     //median value of vertices in rank r-1 connected to v
                     int median = calculateMedianOfVerticesConnectedTo(vertex.getId(), layers.get(j - 1), edges);
                     vertex.setMedian(median);
-                    /*if (medians.containsKey(vertex)) {
-                        medians.remove(vertex);
-                    }
-                    medians.put(vertex, median);*/
                 }
 
                 // sort the vertices inside layer based on the new order
@@ -193,8 +171,7 @@ public class VertexOrdering {
             Vertex vertexInLayer = vertices.get(i);
 
             boolean hasConnection = edges.stream()
-                    .anyMatch(e -> (e.getFrom().equals(vertexInLayer.getId()) || e.getTo().equals(vertexInLayer.getId()))
-                            && (e.getFrom().equals(vertex) || e.getTo().equals(vertex)));
+                    .anyMatch(e -> e.isLinkedWith(vertexInLayer.getId()) && e.isLinkedWith (vertex));
 
             if (hasConnection) {
                 connectedVerticesIndex.add(i);
@@ -207,6 +184,7 @@ public class VertexOrdering {
         if(size == 0){
             return layer.getVertices().indexOf(vertex);
         }
+
         if (size == 1) {
             return connectedVerticesIndex.get(0);
         }
@@ -231,26 +209,28 @@ public class VertexOrdering {
 
     public ArrayList<Layer> createVirtual(ArrayList<Edge> edges) {
         int virtualIndex = 0;
-        for (int i = 0; i < layers.size() - 1; i++) {
-            Layer currentLayer = layers.get(i);
-            Layer nextLayer = layers.get(i + 1);
+        ArrayList<Layer> virtualized = clone(inputLayers);
+
+        for (int i = 0; i < virtualized.size() - 1; i++) {
+            Layer currentLayer = virtualized.get(i);
+            Layer nextLayer = virtualized.get(i + 1);
             for (Vertex vertex :
-                    currentLayer.vertices) {
+                    currentLayer.getVertices()) {
 
                 List<Edge> outgoing = edges.stream()
                         .filter(e -> e.getFrom().equals(vertex.getId()))
-                        .filter(e -> Math.abs(getLayerNumber(e.getTo(), layers) - getLayerNumber(vertex.getId(), layers)) > 1)
+                        .filter(e -> Math.abs(getLayerNumber(e.getTo(), virtualized) - getLayerNumber(vertex.getId(), virtualized)) > 1)
                         .collect(Collectors.toList());
 
                 List<Edge> incoming = edges.stream()
                         .filter(e -> e.getTo().equals(vertex.getId()))
-                        .filter(e -> Math.abs(getLayerNumber(e.getFrom(), layers) - getLayerNumber(vertex.getId(), layers)) > 1)
+                        .filter(e -> Math.abs(getLayerNumber(e.getFrom(), virtualized) - getLayerNumber(vertex.getId(), virtualized)) > 1)
                         .collect(Collectors.toList());
 
                 for (Edge edge :
                         outgoing) {
-                    Vertex virtualVertex = new Vertex("V" + virtualIndex++);
-                    nextLayer.vertices.add(virtualVertex);
+                    Vertex virtualVertex = new Vertex("V" + virtualIndex++, true);
+                    nextLayer.getVertices().add(virtualVertex);
                     edges.remove(edge);
                     Edge v1 = new Edge(edge.getFrom(), virtualVertex.getId());
                     Edge v2 = new Edge(virtualVertex.getId(), edge.getTo());
@@ -260,8 +240,8 @@ public class VertexOrdering {
 
                 for (Edge edge :
                         incoming) {
-                    Vertex virtualVertex = new Vertex("V" + virtualIndex++);
-                    nextLayer.vertices.add(virtualVertex);
+                    Vertex virtualVertex = new Vertex("V" + virtualIndex++, true);
+                    nextLayer.getVertices().add(virtualVertex);
                     edges.remove(edge);
                     Edge v1 = new Edge(virtualVertex.getId(), edge.getTo());
                     Edge v2 = new Edge(edge.getFrom(), virtualVertex.getId());
@@ -271,7 +251,7 @@ public class VertexOrdering {
             }
         }
 
-        return layers; // This doesn't make much sense since we're changing the input collection
+        return virtualized;
     }
 
     private int getLayerNumber(String vertex, ArrayList<Layer> layers) {
@@ -280,87 +260,7 @@ public class VertexOrdering {
                 .filter(l -> l.getVertices().stream().anyMatch(v -> v.getId().equals(vertex)))
                 .findFirst();
 
-        return layer.get().level;
+        return layer.get().getLevel();
     }
 
-    public static class Layer {
-
-        private final int level;
-        private final ArrayList<Vertex> vertices;
-
-        public Layer(int level) {
-            this.level = level;
-            this.vertices = new ArrayList<>();
-        }
-
-        public void addNewVertex(String vertexId) {
-            this.vertices.add(new Vertex(vertexId));
-        }
-
-        public ArrayList<Vertex> getVertices() {
-            return this.vertices;
-        }
-
-        public Layer clone() {
-            final Layer clone = new Layer(this.level);
-            for (Vertex v :
-                    this.vertices) {
-                clone.getVertices().add(v.clone());
-            }
-            return clone;
-        }
-    }
-
-    public static class Vertex implements Comparable,
-                                          Cloneable {
-
-        private final String id;
-        private int median;
-
-        public Vertex(String id) {
-            this.id = id;
-        }
-
-        public int getMedian() {
-            return median;
-        }
-
-        public void setMedian(int median) {
-            this.median = median;
-        }
-
-        @Override
-        public Vertex clone() {
-            final Vertex clone = new Vertex(this.id);
-            clone.setMedian(this.median);
-            return clone;
-        }
-
-        @Override
-        public int compareTo(Object other) {
-            if (other instanceof Vertex) {
-                if (median < ((Vertex) other).getMedian()) {
-                    return -1;
-                } else if (median > ((Vertex) other).getMedian()) {
-                    return 1;
-                }
-//                else {
-//                    if (reverse) {
-//                        return -1;
-//                    } else {
-//                        return 1;
-//                    }
-//                }
-//            } else {
-
-//            }
-            }
-
-            return 0;
-        }
-
-        public String getId() {
-            return this.id;
-        }
-    }
 }

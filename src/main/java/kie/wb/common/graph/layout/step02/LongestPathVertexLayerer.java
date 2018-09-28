@@ -18,57 +18,61 @@ package kie.wb.common.graph.layout.step02;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Optional;
 
 import kie.wb.common.graph.layout.Graph;
+import kie.wb.common.graph.layout.Layer;
+import kie.wb.common.graph.layout.Vertex;
 
 /**
  * Assign each vertex in a graph to a layers, using the longest path algorithm.
  */
-public class LongestPathVertexLayerer {
+public final class LongestPathVertexLayerer {
 
     private final Vertex[] vertices;
-    private final int[] vertexHeight;
+    private final HashMap<String, Integer> vertexHeight;
     private final Graph graph;
     private final ArrayList<Layer> layers;
 
-    public LongestPathVertexLayerer(Graph graph) {
+    public LongestPathVertexLayerer(final Graph graph) {
 
-        String[] vertices = graph.getVertices();
+        String[] graphVertices = graph.getVertices();
 
         this.layers = new ArrayList<>();
         this.graph = graph;
-        this.vertices = new Vertex[vertices.length];
-        this.vertexHeight = new int[vertices.length];
+        this.vertices = new Vertex[graphVertices.length];
+        this.vertexHeight = new HashMap();
 
-        for (int i = 0; i < vertices.length; i++) {
-            String v = vertices[i];
-            this.vertices[i] = new Vertex(v, i);
-            this.vertexHeight[i] = -1;
-        }
+        for (int i = 0; i < graphVertices.length; i++) {
+            String v = graphVertices[i];
+            this.vertices[i] = new Vertex(v);
+            this.vertexHeight.put(v, -1);        }
     }
 
-    public void execute() {
+    public ArrayList<Layer> execute() {
         for (Vertex vertex :
                 this.vertices) {
             visit(vertex);
         }
+
+        return this.layers;
     }
 
-    private int visit(Vertex vertex) {
-        int height = this.vertexHeight[vertex.id];
+    private int visit(final Vertex vertex) {
+        int height = this.vertexHeight.get(vertex.getId());
         if (height >= 0) {
             return height;
         }
 
         int maxHeight = 1;
 
-        String[] verticesFromHere = graph.getVerticesFrom(vertex.getLabel());
+        String[] verticesFromHere = graph.getVerticesFrom(vertex.getId());
         for (String nextVertex :
                 verticesFromHere) {
-            if(!nextVertex.equals(vertex.getLabel())){
+            if(!nextVertex.equals(vertex.getId())){
                 Optional<Vertex> next = Arrays.stream(this.vertices)
-                        .filter(f -> f.getLabel().equals(nextVertex))
+                        .filter(f -> f.getId().equals(nextVertex))
                         .findFirst();
                 int targetHeight = visit(next.get());
                 maxHeight = Math.max(maxHeight, targetHeight+1);
@@ -79,7 +83,7 @@ public class LongestPathVertexLayerer {
         return maxHeight;
     }
 
-    private void addToLayer(Vertex vertex, int height) {
+    private void addToLayer(final Vertex vertex, final int height) {
         for(int i = this.layers.size(); i <height; i++){
             layers.add(0, new Layer());
         }
@@ -87,57 +91,7 @@ public class LongestPathVertexLayerer {
         int level = layers.size() - height;
         Layer layer = layers.get(level);
         layer.setLevel(height);
-        vertex.setLayer(layer);
-        vertexHeight[vertex.id] = height;
-    }
-
-    public Vertex[] getVertices(){
-        return this.vertices;
-    }
-
-    private class Layer{
-
-        private int level;
-
-        public void setLevel(int level) {
-            this.level = level;
-        }
-
-        public int getLevel() {
-            return level;
-        }
-    }
-
-    private class Vertex {
-
-        private final String label;
-        private int id;
-        private Layer layer;
-
-        private Vertex(String label, int id) {
-            this.label = label;
-            this.id = id;
-        }
-
-        public int getId() {
-            return this.id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getLabel() {
-            return this.label;
-        }
-
-        public void setLayer(Layer layer) {
-
-            this.layer = layer;
-        }
-
-        public Layer getLayer() {
-            return this.layer;
-        }
+        layer.addVertex(vertex);
+        vertexHeight.put(vertex.getId(), height);
     }
 }

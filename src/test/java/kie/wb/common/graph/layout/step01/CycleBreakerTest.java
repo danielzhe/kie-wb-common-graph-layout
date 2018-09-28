@@ -18,6 +18,7 @@ package kie.wb.common.graph.layout.step01;
 
 import kie.wb.common.graph.layout.Graph;
 import kie.wb.common.graph.layout.GraphTest;
+import kie.wb.common.graph.layout.Graphs;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,7 @@ public class CycleBreakerTest {
 
     @Test
     public void testAcyclicGraphs() {
-        Graph graph = new Graph(GraphTest.Graphs.SimpleAcyclic);
+        Graph graph = new Graph(Graphs.SimpleAcyclic);
 
         CycleBreaker breaker = new CycleBreaker(graph);
         Graph result = breaker.breakCycle();
@@ -38,7 +39,7 @@ public class CycleBreakerTest {
 
     @Test
     public void testSimpleCyclicGraph() {
-        Graph graph = new Graph(GraphTest.Graphs.SimpleCyclic);
+        Graph graph = new Graph(Graphs.SimpleCyclic);
         graph.addEdge("A", "B");
         graph.addEdge("B", "C");
         graph.addEdge("C", "D");
@@ -54,7 +55,7 @@ public class CycleBreakerTest {
 
     @Test
     public void testCyclicGraph1() {
-        Graph graph = new Graph(GraphTest.Graphs.CyclicGraph1);
+        Graph graph = new Graph(Graphs.CyclicGraph1);
 
         CycleBreaker breaker = new CycleBreaker(graph);
         Graph result = breaker.breakCycle();
