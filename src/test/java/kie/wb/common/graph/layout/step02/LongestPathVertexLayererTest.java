@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import kie.wb.common.graph.layout.Graph;
+import kie.wb.common.graph.layout.Graphs;
 import kie.wb.common.graph.layout.Layer;
 import kie.wb.common.graph.layout.Vertex;
 import kie.wb.common.graph.layout.step03.VertexOrdering;
@@ -34,6 +35,15 @@ import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LongestPathVertexLayererTest {
+
+
+    @Test
+    public void realCase1(){
+
+        Graph graph = new Graph((Graphs.RealCase1));
+        LongestPathVertexLayerer layerer = new LongestPathVertexLayerer(graph);
+        ArrayList<Layer> result = layerer.execute();
+    }
 
     @Test
     public void simple2LayersTest() {

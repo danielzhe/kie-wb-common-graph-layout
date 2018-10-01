@@ -24,6 +24,9 @@ public final class Vertex implements Comparable<Vertex>,
     private final String id;
     private int median;
     private boolean isVirtual;
+    private boolean isStartVertex;
+    private int x;
+    private int y;
 
     public Vertex(final String id) {
         this(id, false);
@@ -51,10 +54,30 @@ public final class Vertex implements Comparable<Vertex>,
         this.median = median;
     }
 
+
+    public int getX() {
+        return this.x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
     @Override
     public Vertex clone() {
         final Vertex clone = new Vertex(this.id);
         clone.setMedian(this.median);
+        clone.setVirtual(this.isVirtual);
+        clone.setX(this.x);
+        clone.setY(this.y);
         return clone;
     }
 
@@ -90,5 +113,13 @@ public final class Vertex implements Comparable<Vertex>,
 
     public String getId() {
         return this.id;
+    }
+
+    public boolean isStartVertex() {
+        return isStartVertex;
+    }
+
+    public void setStartVertex(boolean startVertex) {
+        isStartVertex = startVertex;
     }
 }

@@ -49,10 +49,10 @@ public class VertexOrderingTest {
         layers.add(layer02);
 
         VertexOrdering ordering = new VertexOrdering(graph, layers);
-        ArrayList<Layer> orderedLayers = ordering.process();
+        VertexOrdering.Ordered orderedLayers = ordering.process();
 
-        assertArrayEquals(new Object[]{"A", "B"}, orderedLayers.get(0).getVertices().stream().map(v -> v.getId()).toArray());
-        assertArrayEquals(new Object[]{"D", "C"}, orderedLayers.get(1).getVertices().stream().map(v -> v.getId()).toArray());
+        assertArrayEquals(new Object[]{"A", "B"}, orderedLayers.getLayers().get(0).getVertices().stream().map(v -> v.getId()).toArray());
+        assertArrayEquals(new Object[]{"D", "C"}, orderedLayers.getLayers().get(1).getVertices().stream().map(v -> v.getId()).toArray());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class VertexOrderingTest {
         layers.add(layer03);
 
         VertexOrdering ordering = new VertexOrdering(graph, layers);
-        ArrayList<Layer> orderedLayers = ordering.process();
+        ArrayList<Layer> orderedLayers = ordering.process().getLayers();
 
         assertArrayEquals(new Object[]{"A"}, orderedLayers.get(0).getVertices().stream().map(v -> v.getId()).toArray());
         assertArrayEquals(new Object[]{"D", "B", "C"}, orderedLayers.get(1).getVertices().stream().map(v -> v.getId()).toArray());

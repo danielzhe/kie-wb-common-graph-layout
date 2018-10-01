@@ -20,45 +20,59 @@ import java.util.ArrayList;
 
 public final class Layer {
 
-        private int level;
-        private final ArrayList<Vertex> vertices;
+    private int level;
+    private final ArrayList<Vertex> vertices;
 
-        public Layer(final int level) {
-            this();
-            this.level = level;         
-        }
-
-        public Layer(){
-            this.vertices = new ArrayList<>();
-        }
-
-        public void addVertex(final Vertex vertex){
-            this.vertices.add(vertex);
-        }
-
-        public ArrayList<Vertex> getVertices(){
-            return this.vertices;
-        }
-
-        public void setLevel(final int level) {
-            this.level = level;
-        }
-
-        public int getLevel() {
-            return level;
-        }
-        
-        public void addNewVertex(final String vertexId) {
-            this.vertices.add(new Vertex(vertexId));
-        }
-
-        public Layer clone() {
-            final Layer clone = new Layer(this.level);
-            ArrayList<Vertex> cloneVertices = clone.getVertices();
-            for (Vertex v :
-                    this.vertices) {
-                cloneVertices.add(v.clone());
-            }
-            return clone;
-        }
+    public Layer(final int level) {
+        this();
+        this.level = level;
     }
+
+    public Layer() {
+        this.vertices = new ArrayList<>();
+    }
+
+    public void addVertex(final Vertex vertex) {
+        this.vertices.add(vertex);
+    }
+
+    public ArrayList<Vertex> getVertices() {
+        return this.vertices;
+    }
+
+    public void setLevel(final int level) {
+        this.level = level;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void addNewVertex(final String vertexId) {
+        this.vertices.add(new Vertex(vertexId));
+    }
+
+    public Layer clone() {
+        final Layer clone = new Layer(this.level);
+        ArrayList<Vertex> cloneVertices = clone.getVertices();
+        for (Vertex v :
+                this.vertices) {
+            cloneVertices.add(v.clone());
+        }
+        return clone;
+    }
+
+    @Override
+    public String toString() {
+        String str = "LAYER " + this.level + " [";
+        for (int i = 0; i < this.vertices.size(); i++) {
+            if (i >= 1 && i < this.vertices.size()) {
+                str += ", ";
+            }
+            str += this.vertices.get(i).getId();
+        }
+        str += "]";
+
+        return str;
+    }
+}

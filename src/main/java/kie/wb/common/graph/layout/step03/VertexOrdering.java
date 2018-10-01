@@ -44,7 +44,7 @@ public class VertexOrdering {
         this.inputLayers = layers;
     }
 
-    public ArrayList<Layer> process() {
+    public Ordered process() {
 
         ArrayList<Edge> edges = new ArrayList<>(Arrays.asList(this.graph.getEdges()));
         ArrayList<Layer> virtualized = createVirtual(edges);
@@ -68,7 +68,7 @@ public class VertexOrdering {
             }
         }
 
-        return best;
+        return new Ordered(best, edges);
     }
 
     public static Object[] flat(ArrayList<Edge> edges, Layer north, Layer south) {
@@ -261,6 +261,25 @@ public class VertexOrdering {
                 .findFirst();
 
         return layer.get().getLevel();
+    }
+
+    public static final class Ordered {
+        private final ArrayList<Layer> layers;
+        private final ArrayList<Edge> edges;
+
+        public Ordered(ArrayList<Layer> layers,
+                       ArrayList<Edge> edges){
+            this.layers = layers;
+            this.edges = edges;
+        }
+
+        public ArrayList<Layer> getLayers() {
+            return layers;
+        }
+
+        public ArrayList<Edge> getEdges() {
+            return edges;
+        }
     }
 
 }

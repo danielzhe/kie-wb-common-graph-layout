@@ -18,12 +18,20 @@ package kie.wb.common.graph.layout;
 
 public class Edge {
 
-    private final String from;
-    private final String to;
+    private String from;
+    private String to;
+    private boolean isReversed;
 
     public Edge(String from, String to) {
+        this(from, to, false);
+    }
+
+    public Edge(final String from,
+                final String to,
+                final boolean isReversed){
         this.from = from;
         this.to = to;
+        this.isReversed = isReversed;
     }
 
     public String getFrom() {
@@ -38,6 +46,17 @@ public class Edge {
         return this.getFrom().equals(vertexId) || this.getTo().equals(vertexId);
     }
 
+    public boolean isReversed() {
+        return isReversed;
+    }
+
+    public void reverse() {
+        final String oldTo = this.to;
+        this.to = this.from;
+        this.from = oldTo;
+        this. isReversed = false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Edge) {
@@ -47,4 +66,6 @@ public class Edge {
         }
         return false;
     }
+
+
 }

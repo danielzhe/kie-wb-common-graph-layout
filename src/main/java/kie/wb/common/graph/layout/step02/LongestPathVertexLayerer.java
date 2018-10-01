@@ -47,10 +47,12 @@ public final class LongestPathVertexLayerer {
         for (int i = 0; i < graphVertices.length; i++) {
             String v = graphVertices[i];
             this.vertices[i] = new Vertex(v);
-            this.vertexHeight.put(v, -1);        }
+            this.vertexHeight.put(v, -1);
+        }
     }
 
     public ArrayList<Layer> execute() {
+
         for (Vertex vertex :
                 this.vertices) {
             visit(vertex);

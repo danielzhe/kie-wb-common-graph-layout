@@ -16,15 +16,16 @@
 
 package kie.wb.common.graph.layout;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Graph {
 
-    private final HashSet<String> vertices;
+    private final ArrayList<String> vertices;
     private final HashSet<Edge> edges;
 
     public Graph() {
-        this.vertices = new HashSet<>();
+        this.vertices = new ArrayList<>();
         this.edges = new HashSet<>();
     }
 
@@ -41,8 +42,13 @@ public class Graph {
 
     public void addEdge(Edge edge) {
         this.edges.add(edge);
-        this.vertices.add(edge.getFrom());
-        this.vertices.add(edge.getTo());
+        if(!this.vertices.contains(edge.getFrom()))        {
+            this.vertices.add(edge.getFrom());
+        }
+
+        if(!this.vertices.contains(edge.getTo()))        {
+            this.vertices.add(edge.getTo());
+        }
     }
 
     public String[] getVertices() {
